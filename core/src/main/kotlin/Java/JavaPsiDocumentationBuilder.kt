@@ -214,6 +214,7 @@ class JavaPsiDocumentationBuilder : JavaDocumentationBuilder {
         val node = nodeForElement(this, nodeKind(),
                 if (isConstructor) "<init>" else name)
 
+        node.appendTextNode(getSignature(this)!!, NodeKind.Signature)
         if (!isConstructor) {
             node.appendType(returnType)
         }
