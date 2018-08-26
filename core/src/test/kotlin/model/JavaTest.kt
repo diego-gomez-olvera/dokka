@@ -100,7 +100,7 @@ public class JavaTest {
         }
     }
 
-    @Test fun constructors() {
+    @Test fun constructorsHtml() {
         verifyJavaPackageMember("testdata/java/constructors.java", format = "html") { cls ->
             val constructors = cls.members(NodeKind.Constructor)
             assertEquals(2, constructors.size)
@@ -124,8 +124,36 @@ public class JavaTest {
                     assertEquals(NodeKind.Parameter, kind)
                     assertEquals(Content.Empty, content)
                     assertEquals("String", detail(NodeKind.Type).name)
-                    assertTrue(links.none())
-                    assertTrue(members.none())
+                }
+            }
+        }
+    }
+
+    @Test
+    fun constructorsJavadoc() {
+        verifyJavaPackageMember("testdata/java/constructors.java", format = "javadoc") { cls ->
+            val constructors = cls.members(NodeKind.Constructor)
+            assertEquals(2, constructors.size)
+            with(constructors[0]) {
+                assertEquals("<init>", name)
+                assertEquals(Content.Empty, content)
+                assertEquals(NodeKind.Constructor, kind)
+                assertEquals(2, details.count())
+                assertEquals("public", details[0].name)
+                assertEquals("Test\$Test()", details[1].name)
+            }
+
+            with(constructors[1]) {
+                assertEquals("<init>", name)
+                assertEquals(Content.Empty, content)
+                assertEquals(3, details.count())
+                assertEquals("public", details[0].name)
+                assertEquals("Test\$Test(java.lang.String)", details[1].name)
+                with(details[2]) {
+                    assertEquals("s", name)
+                    assertEquals(NodeKind.Parameter, kind)
+                    assertEquals(Content.Empty, content)
+                    assertEquals("java.lang.String", detail(NodeKind.Type).name)
                 }
             }
         }
