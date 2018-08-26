@@ -6,7 +6,6 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.rt.execution.junit.FileComparisonFailure
 import org.jetbrains.dokka.*
-import org.jetbrains.dokka.DokkaConfiguration.SourceLinkDefinition
 import org.jetbrains.dokka.Utilities.DokkaAnalysisModule
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageLocation
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
@@ -134,12 +133,13 @@ fun verifyPackageMember(source: String,
 
 fun verifyJavaModel(source: String,
                     withKotlinRuntime: Boolean = false,
+                    format: String = "html",
                     verifier: (DocumentationModule) -> Unit) {
     val tempDir = FileUtil.createTempDirectory("dokka", "")
     try {
         val sourceFile = File(source)
         FileUtil.copy(sourceFile, File(tempDir, sourceFile.name))
-        verifyModel(JavaSourceRoot(tempDir, null), withJdk = true, withKotlinRuntime = withKotlinRuntime, verifier = verifier)
+        verifyModel(JavaSourceRoot(tempDir, null), format = format, withJdk = true, withKotlinRuntime = withKotlinRuntime, verifier = verifier)
     }
     finally {
         FileUtil.delete(tempDir)
@@ -148,8 +148,9 @@ fun verifyJavaModel(source: String,
 
 fun verifyJavaPackageMember(source: String,
                             withKotlinRuntime: Boolean = false,
+                            format: String = "html",
                             verifier: (DocumentationNode) -> Unit) {
-    verifyJavaModel(source, withKotlinRuntime) { model ->
+    verifyJavaModel(source, withKotlinRuntime, format) { model ->
         val pkg = model.members.single()
         verifier(pkg.members.single())
     }
@@ -205,8 +206,9 @@ fun verifyOutput(path: String,
 fun verifyJavaOutput(path: String,
                      outputExtension: String,
                      withKotlinRuntime: Boolean = false,
+                     format: String = "html",
                      outputGenerator: (DocumentationModule, StringBuilder) -> Unit) {
-    verifyJavaModel(path, withKotlinRuntime) { model ->
+    verifyJavaModel(path, withKotlinRuntime, format) { model ->
         verifyModelOutput(model, outputExtension, path, outputGenerator)
     }
 }
